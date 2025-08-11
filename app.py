@@ -1,8 +1,24 @@
+import os
+import gdown
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
 import joblib
 
+# Google Drive file IDs
+files = {
+    "df_anime.pkl": "1sDJ_8M9_vMoW-W8TSryQnnXlqWP05BhL",
+    "cosine_sim.pkl": "1uS_J6XaM-bIAUAhwg0qaA14dKEcD9MfZ"
+}
+
+# Download missing files
+for filename, file_id in files.items():
+    if not os.path.exists(filename):
+        url = f"https://drive.google.com/uc?id={file_id}"
+        print(f"Downloading {filename}...")
+        gdown.download(url, filename, quiet=False)
+    else:
+        print(f"{filename} already exists, skipping.")
 
 
 app = Flask(__name__)
