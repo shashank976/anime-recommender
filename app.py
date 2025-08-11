@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from scipy.sparse import load_npz
 import joblib
 
 
@@ -14,7 +15,7 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 # Load preprocessed data
 df_anime = joblib.load('df_anime.pkl')
-cosine_sim = joblib.load('cosine_sim.pkl')
+cosine_sim = load_npz('cosine_sim_sparse.npz')
 
 def get_recommendations(input_titles, cosine_sim, df, top_n=20, score_weight=0.04):
     

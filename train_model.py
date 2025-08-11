@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from scipy.sparse import save_npz
+from scipy.sparse import csr_matrix
 import joblib
 
 df_anime = pd.read_csv('anime-filtered.csv', usecols=['Name', 'English name', 'Genres', 'Score', 'Episodes', 'sypnopsis', 'Type'])
@@ -36,9 +38,10 @@ df_anime = df_anime.reset_index(drop=True)
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_anime['combined_features'])
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+cosine_sim_sparse = csr_matrix(cosine_sim)
 
 # Save preprocessed objects
-joblib.dump(df_anime, 'df_anime.pkl')
-joblib.dump(cosine_sim, 'cosine_sim.pkl')
+joblib.dump(df_anime, "df_anime.pkl")
+save_npz("cosine_sim_sparse.npz", cosine_sim_sparse)
 
 print(" Data preprocessed and saved!")
