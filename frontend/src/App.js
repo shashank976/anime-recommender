@@ -18,10 +18,12 @@ function App() {
     }
   };
 
+  const API_BASE = process.env.REACT_APP_API_URL || 'https://anime-recommender-738z.onrender.com';
+
   // Main function to get recommendations from Flask and attach images
   const getRecommendations = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/recommend?title=${encodeURIComponent(title)}`);
+      const response = await fetch(`${API_BASE}/recommend?title=${encodeURIComponent(title)}`);
       const data = await response.json();
 
       if (data.error) {
