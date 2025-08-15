@@ -4,6 +4,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
 import joblib
+import pandas as pd
+
 
 # Google Drive file IDs
 model_files = {
@@ -12,6 +14,8 @@ model_files = {
     "tfidf_matrix.pkl": "https://drive.google.com/file/d/1BQ8OwKs7U5OSP9nq3miwo8cPTyxpvAN9/view?usp=sharing",
     "knn.pkl": "https://drive.google.com/file/d/1z6Bo8MOv01mO5nHUEEDuOkVzY_9xMn8V/view?usp=sharing"
 }
+
+os.makedirs("models", exist_ok=True)
 
 # Download missing files
 for filename, file_id in model_files.items():
@@ -26,10 +30,10 @@ for filename, file_id in model_files.items():
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 # Load preprocessed data
-df_anime = joblib.load("models/anime_df.pkl")
-tfidf = joblib.load("models/tfidf.pkl")
-tfidf_matrix = joblib.load("models/tfidf_matrix.pkl")
-knn = joblib.load("models/knn.pkl")
+df_anime = joblib.load("anime_df.pkl")
+tfidf = joblib.load("tfidf.pkl")
+tfidf_matrix = joblib.load("tfidf_matrix.pkl")
+knn = joblib.load("knn.pkl")
 
 
 def get_recommendations_knn(title, knn_model, feature_matrix, df, top_n=50):
@@ -41,7 +45,7 @@ def get_recommendations_knn(title, knn_model, feature_matrix, df, top_n=50):
 
     idx = matches.index[0]
     # Ensure 2D input for KNN
-    distances, indices = knn_model.kneighbors(feature_matrix[idx].reshape(1, -1), n_neighbors=top_n + 1)
+    distances, indices = knn_model.kneighbors(feature_matrix[idx], n_neighbors=top_n + 1)
 
     recommendations = []
     for i in range(1, len(indices[0])):  # Skip the first (it's the same anime)
@@ -89,7 +93,7 @@ def recommend():
     recs = recs[:20]  # Return top 20
 
 
-    return jsonify({'recommendations': [f"{name} (score: {score})" for name, score in recs]})
+    return jsonify({'recommendations': [f"{name} (score: {score:.2f})" for name, score in recs]})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
