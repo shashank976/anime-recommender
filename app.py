@@ -6,13 +6,15 @@ import numpy as np
 import joblib
 
 # Google Drive file IDs
-files = {
-    "df_anime.pkl": "1sDJ_8M9_vMoW-W8TSryQnnXlqWP05BhL",
-    "cosine_sim.pkl": "1uS_J6XaM-bIAUAhwg0qaA14dKEcD9MfZ"
+model_files = {
+    "anime_df.pkl": "https://drive.google.com/file/d/1iCcJeQpk8TcxCjJsxL8Ep45C5m4Plsxw/view?usp=sharing",
+    "tfidf.pkl": "https://drive.google.com/file/d/1_4XQGLZDCzWalBpGqyQQ2FyB3tcII7gI/view?usp=sharing",
+    "tfidf_matrix.pkl": "https://drive.google.com/file/d/1BQ8OwKs7U5OSP9nq3miwo8cPTyxpvAN9/view?usp=sharing",
+    "knn.pkl": "https://drive.google.com/file/d/1z6Bo8MOv01mO5nHUEEDuOkVzY_9xMn8V/view?usp=sharing"
 }
 
 # Download missing files
-for filename, file_id in files.items():
+for filename, file_id in model_files.items():
     if not os.path.exists(filename):
         url = f"https://drive.google.com/uc?id={file_id}"
         print(f"Downloading {filename}...")
@@ -24,63 +26,55 @@ for filename, file_id in files.items():
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 # Load preprocessed data
-df_anime = joblib.load('df_anime.pkl')
-cosine_sim = joblib.load('cosine_sim.pkl')
+df_anime = joblib.load("models/anime_df.pkl")
+tfidf = joblib.load("models/tfidf.pkl")
+tfidf_matrix = joblib.load("models/tfidf_matrix.pkl")
+knn = joblib.load("models/knn.pkl")
 
-def get_recommendations(input_titles, cosine_sim, df, top_n=20, score_weight=0.04):
-    
-    #Recommends anime based on input titles, considering cosine similarity and anime scores.
-    # Find indices of input titles in the dataset
-    input_indices = []
-    for title in input_titles:
-        matches = df[(df['Name'].str.lower() == title.lower()) | (df['English name'].str.lower() == title.lower())]
-        if not matches.empty:
-            input_indices.append(matches.iloc[0].name)
-        else:
-            print(f"Anime '{title}' not found in the dataset.")
-    
-    if not input_indices:
+
+def get_recommendations_knn(title, knn_model, feature_matrix, df, top_n=50):
+    # Find index for the input title
+    matches = df[(df['Name'].str.lower() == title.lower()) |
+                 (df['English name'].str.lower() == title.lower())]
+    if matches.empty:
         return []
 
-    type_penalty = np.array([0.0 if t in ['TV', 'Movie', 'ONA'] else -0.2 for t in df['Type'].str.lower()])
-    # Compute the average similarity scores for all anime
-    sim_scores = np.mean(cosine_sim[input_indices], axis=0)
-    
-    # Adjust similarity scores using the score column
-    adjusted_scores = sim_scores + (score_weight * df['Score'].values) + type_penalty
+    idx = matches.index[0]
+    # Ensure 2D input for KNN
+    distances, indices = knn_model.kneighbors(feature_matrix[idx].reshape(1, -1), n_neighbors=top_n + 1)
 
-    # Sort by adjusted scores and get the top indices
-    top_indices = adjusted_scores.argsort()[-(50 + len(input_indices)):][::-1]
-    # Exclude the input anime themselves
-    top_indices = [i for i in top_indices if i not in input_indices]
+    recommendations = []
+    for i in range(1, len(indices[0])):  # Skip the first (it's the same anime)
+        rec_idx = indices[0][i]
+        name = df.iloc[rec_idx]['Name']
+        score = df.iloc[rec_idx]['Score']
+        if pd.notna(score):
+            recommendations.append((name, score))
 
-    # Get the full recommendations
-    recommendations = df.iloc[top_indices][['Name', 'Score']].values
-
-    recommendations = deduplicate_franchise(recommendations, input_titles[0])
-
-    # Return only top N after deduplication
-    recommendations = recommendations[:top_n]       
     return recommendations
 
-def deduplicate_franchise(recs, base_title):
-    base = base_title.lower().split()[0]
-    seen_franchises = set()
+def remove_duplicate_movies(recommendations):
     final_recs = []
+    movie_seen_for_franchise = set()
 
-    for name, score in recs:
-        name_lower = name.lower()
+    for name, score in recommendations:
+        lower_name = name.lower()
+        # Detect franchise (first word or before colon)
+        base_franchise = lower_name.split(':')[0].split()[0]
 
-        # Only keep one anime per franchise name
-        if base in name_lower:
-            if base in seen_franchises:
+        if "movie" in lower_name:
+            if base_franchise in movie_seen_for_franchise:
                 continue
-            seen_franchises.add(base)
+            movie_seen_for_franchise.add(base_franchise)
 
-        final_recs.append([name, score])
+        final_recs.append((name, score))
 
     return final_recs
 
+def deduplicate_franchise(recommendations, input_title):
+    """Remove anime from the same franchise as input"""
+    input_base = input_title.lower().split(':')[0].split()[0]
+    return [(name, score) for name, score in recommendations if input_base not in name.lower()]
 
 
 @app.route('/recommend', methods=['GET'])
@@ -89,7 +83,12 @@ def recommend():
     if not title:
         return jsonify({'error': 'No title provided'}), 400
 
-    recs = get_recommendations([title], cosine_sim, df_anime, top_n=20, score_weight=0.05)
+    recs = get_recommendations_knn(title, knn, tfidf_matrix, df_anime, top_n=50)
+    recs = remove_duplicate_movies(recs)
+    recs = deduplicate_franchise(recs, title)
+    recs = recs[:20]  # Return top 20
+
+
     return jsonify({'recommendations': [f"{name} (score: {score})" for name, score in recs]})
 
 if __name__ == '__main__':

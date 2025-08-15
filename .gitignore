@@ -1,6 +1,7 @@
 env/
 __pycache__/
 *.pyc
-
+*.pkl
 df_anime.pkl
 cosine_sim.pkl
+cosine_sim_sparse.npz
