@@ -30,6 +30,7 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 # Load preprocessed data
 df_anime = joblib.load("anime_df.pkl")
+df_anime = df_anime.reset_index(drop=True)
 tfidf = joblib.load("tfidf.pkl")
 tfidf_matrix = joblib.load("tfidf_matrix.pkl")
 knn = joblib.load("knn.pkl")
