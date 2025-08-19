@@ -106,7 +106,7 @@ def recommend():
     # Return top 20
     recs = recs[:20]
 
-    return jsonify({'recommendations': [f"{name} (score: {score:.2f})" for name, score in recs]})
+    return jsonify({'recommendations': [f"{name} (score: {score:.2f})" for name, score, hybrid in recs]})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
