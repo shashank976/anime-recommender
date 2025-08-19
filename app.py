@@ -64,7 +64,7 @@ def remove_duplicate_movies(recommendations):
     final_recs = []
     movie_seen_for_franchise = set()
 
-    for name, score in recommendations:
+    for name, score, hybrid in recommendations:
         lower_name = name.lower()
         # Detect franchise (first word or before colon)
         base_franchise = lower_name.split(':')[0].split()[0]
@@ -74,14 +74,14 @@ def remove_duplicate_movies(recommendations):
                 continue
             movie_seen_for_franchise.add(base_franchise)
 
-        final_recs.append((name, score))
+        final_recs.append((name, score, hybrid))
 
     return final_recs
 
 def deduplicate_franchise(recommendations, input_title):
     """Remove anime from the same franchise as input"""
     input_base = input_title.lower().split(':')[0].split()[0]
-    return [(name, score) for name, score in recommendations if input_base not in name.lower()]
+    return [(name, score, hybrid) for name, score, hybrid in recommendations if input_base not in name.lower()]
 
 
 @app.route('/recommend', methods=['GET'])
