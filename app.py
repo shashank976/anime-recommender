@@ -18,11 +18,10 @@ model_files = {
 os.makedirs("models", exist_ok=True)
 
 # Download missing files
-for filename, file_id in model_files.items():
+for filename, url in model_files.items():
     if not os.path.exists(filename):
-        url = f"https://drive.google.com/uc?id={file_id}"
         print(f"Downloading {filename}...")
-        gdown.download(url, filename, quiet=False)
+        gdown.download(url, filename, quiet=False, fuzzy=True)
     else:
         print(f"{filename} already exists, skipping.")
 
