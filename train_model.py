@@ -32,7 +32,10 @@ df_anime['genre_str'] = df_anime['Genres'].apply(lambda x: ' '.join(x.split(', '
 df_anime['combined_features'] = (df_anime['genre_str'] + ' ')*3 + df_anime['sypnopsis']
 df_anime = df_anime.reset_index(drop=True)
 
-
+# Normalize scores to [0,1] for blending later
+scaler = MinMaxScaler()
+score_scaled = scaler.fit_transform(df_anime[['Score']]).flatten()
+# KNN model on features
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_anime['combined_features'])
 knn=NearestNeighbors(metric='cosine', algorithm='brute')
@@ -43,4 +46,5 @@ joblib.dump(df_anime, "anime_df.pkl")
 joblib.dump(tfidf, "tfidf.pkl")
 joblib.dump(tfidf_matrix, "tfidf_matrix.pkl", compress=3)  # compress saves space
 joblib.dump(knn, "knn.pkl")
+joblib.dump(score_scaled, "score_scaled.pkl")
 print('data preprocessed and saved')
