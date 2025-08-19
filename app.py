@@ -85,17 +85,26 @@ def deduplicate_franchise(recommendations, input_title):
 
 
 @app.route('/recommend', methods=['GET'])
+@app.route('/recommend', methods=['GET'])
 def recommend():
     title = request.args.get('title')  # ?title=Naruto
     if not title:
         return jsonify({'error': 'No title provided'}), 400
 
+    recs = get_recommendations_knn(title, knn, tfidf_matrix, df_anime, scores_scaled, top_n=50)
+
+    if not recs:
+        return jsonify({'error': f'No recommendations found for "{title}"'}), 404
+
+    # Sort by hybrid score descending
     recs.sort(key=lambda x: x[2], reverse=True)
-    recs = get_recommendations_knn(title, knn, tfidf_matrix, df_anime, scores_scaled,top_n=50,)
+
+    # Deduplicate movies/franchise
     recs = remove_duplicate_movies(recs)
     recs = deduplicate_franchise(recs, title)
-    recs = recs[:20]  # Return top 20
 
+    # Return top 20
+    recs = recs[:20]
 
     return jsonify({'recommendations': [f"{name} (score: {score:.2f})" for name, score in recs]})
 
