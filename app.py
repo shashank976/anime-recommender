@@ -9,10 +9,10 @@ import pandas as pd
 
 # Google Drive file IDs
 model_files = {
-    "anime_df.pkl": "https://drive.google.com/file/d/1iCcJeQpk8TcxCjJsxL8Ep45C5m4Plsxw/view?usp=sharing",
-    "tfidf.pkl": "https://drive.google.com/file/d/1_4XQGLZDCzWalBpGqyQQ2FyB3tcII7gI/view?usp=sharing",
-    "tfidf_matrix.pkl": "https://drive.google.com/file/d/1BQ8OwKs7U5OSP9nq3miwo8cPTyxpvAN9/view?usp=sharing",
-    "knn.pkl": "https://drive.google.com/file/d/1z6Bo8MOv01mO5nHUEEDuOkVzY_9xMn8V/view?usp=sharing"
+    "anime_df.pkl": "https://drive.google.com/file/d/1lFvWIbB9kJlj0KjBZsexHi83BQkdjcAZ/view?usp=sharing",
+    "tfidf.pkl": "https://drive.google.com/file/d/1wRNFYwOPE0Z1YjqkEK2JK7tBHBDTd-cW/view?usp=sharing",
+    "tfidf_matrix.pkl": "https://drive.google.com/file/d/1nGG8wnMREVxuqox-VFK_G0hvqESl7R0f/view?usp=sharing",
+    "knn.pkl": "https://drive.google.com/file/d/1fSizLyMlkoCwKMEs2r6NYKXrK7bGoXPQ/view?usp=sharing"
 }
 
 os.makedirs("models", exist_ok=True)
