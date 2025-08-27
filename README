@@ -1,0 +1,16 @@
+Anime Recommender 
+  A content-based anime recommendation system built with Python, TF-IDF, KNN, Flask, React, and the Jikan API. Input an anime title and get personalized recommendations instantly.
+  Live Demo: https://anime-recommender-coral.vercel.app/ (Takes around 30 seconds to start due to Render backend startup)
+
+Highlights
+  - Machine Learning: TF-IDF + K-Nearest Neighbors for content-based recommendations.
+  - Data API: Fetches anime metadata dynamically via Jikan API.
+  - Web App: Interactive React frontend communicating with Flask backend.
+  - Deployment: Backend on Render, frontend on Vercel.
+  - Skills Demonstrated: Python, Flask, React, API integration, ML, web development, cloud deployment.
+
+How It Works
+  1. User inputs one or more anime titles.
+  2. Backend computes TF-IDF vectors and finds similar anime using KNN.
+  3. Additional info fetched from Jikan API.
+  4. Frontend displays recommendations with similarity scores and anime details.
