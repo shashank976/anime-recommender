@@ -1,6 +1,6 @@
 Anime Recommender 
   A content-based anime recommendation system built with Python, TF-IDF, KNN, Flask, React, and the Jikan API. Input an anime title and get personalized recommendations instantly.
-  Live Demo: https://anime-recommender-coral.vercel.app/ (Takes around 30 seconds to start due to Render backend startup)
+  Live Demo: https://anime-recommender-coral.vercel.app/ (Takes around 50 seconds to start due to Render backend startup)
 
 Highlights
   - Machine Learning: TF-IDF + K-Nearest Neighbors for content-based recommendations.
