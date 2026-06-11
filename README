@@ -1,16 +1,50 @@
-Anime Recommender 
-  A content-based anime recommendation system built with Python, TF-IDF, KNN, Flask, React, and the Jikan API. Input an anime title and get personalized recommendations instantly.
-  Live Demo: https://anime-recommender-coral.vercel.app/ (Takes around 50 seconds to start due to Render backend startup)
+# Anime Recommender
 
-Highlights
-  - Machine Learning: TF-IDF + K-Nearest Neighbors for content-based recommendations.
-  - Data API: Fetches anime metadata dynamically via Jikan API.
-  - Web App: Interactive React frontend communicating with Flask backend.
-  - Deployment: Backend on Render, frontend on Vercel.
-  - Skills Demonstrated: Python, Flask, React, API integration, ML, web development, cloud deployment.
+A content-based anime recommendation system built with Python, Flask, React, TF-IDF, K-Nearest Neighbors, and the Jikan API. The system generates personalized recommendations using anime genres, synopsis text, ratings, and popularity data.
 
-How It Works
-  1. User inputs one or more anime titles.
-  2. Backend computes TF-IDF vectors and finds similar anime using KNN.
-  3. Additional info fetched from Jikan API.
-  4. Frontend displays recommendations with similarity scores and anime details.
+Live Demo: https://anime-recommender-coral.vercel.app/
+
+*Note: Initial requests may take up to 50 seconds due to Render backend cold starts.*
+
+## Highlights
+
+- Content-Based Recommendation Engine using TF-IDF vectorization and KNN similarity search
+- Hybrid Ranking System combining content similarity, community ratings, and popularity scores
+- Franchise Deduplication to prevent sequels, movies, and alternate versions from dominating results
+- Dynamic Anime Metadata retrieval through the Jikan API
+- Interactive React Frontend with filtering by genre, score, and episode count
+- Cloud Deployment using Render (backend) and Vercel (frontend)
+
+## Technologies
+
+- Python
+- Flask
+- Scikit-Learn
+- Pandas
+- React
+- JavaScript
+- Jikan API
+- Render
+- Vercel
+
+## How It Works
+
+1. User searches for an anime title.
+2. TF-IDF vectorization converts anime genres and synopsis text into feature vectors.
+3. K-Nearest Neighbors identifies the most similar anime based on cosine similarity.
+4. A hybrid ranking formula combines:
+   - Content similarity
+   - Anime rating score
+   - Popularity score
+5. Franchise and sequel filtering removes redundant recommendations.
+6. Results are returned to the React frontend and displayed with similarity explanations and metadata.
+
+## Features
+
+- Anime title autocomplete search
+- Recommendation explanations
+- Genre filtering
+- Score filtering
+- Episode count filtering
+- Popularity-aware ranking
+- Franchise deduplication
